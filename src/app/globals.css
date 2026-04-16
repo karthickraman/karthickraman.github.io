@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme {
+  --color-terminal-bg: #0d1117;
+  --color-terminal-surface: #161b22;
+  --color-terminal-border: #30363d;
+  --color-terminal-accent: #00ff41;
+  --color-terminal-accent-soft: #4afa7e;
+  --color-terminal-body: #c9d1d9;
+  --color-terminal-muted: #8b949e;
+  --color-terminal-yellow: #ffbd2e;
+  --color-terminal-red: #ff7b72;
+  --color-terminal-blue: #79c0ff;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-terminal-bg);
+  color: var(--color-terminal-body);
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-terminal-accent) 35%, transparent);
+  color: var(--color-terminal-bg);
+}
+
+/* Scanline CRT overlay */
+.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* Green terminal glow for headings */
+.text-glow {
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.3), 0 0 20px rgba(0, 255, 65, 0.08);
+}
+
+/* Card border glow on hover */
+.terminal-card {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.terminal-card:hover {
+  border-color: rgba(0, 255, 65, 0.25);
+  box-shadow: 0 0 24px rgba(0, 255, 65, 0.06), inset 0 0 24px rgba(0, 255, 65, 0.02);
+}
+
+/* Active nav button */
+.nav-active {
+  border-color: var(--color-terminal-accent) !important;
+  color: var(--color-terminal-accent) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+/* Thin scrollbar for command bar */
+.cmd-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.cmd-scroll::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+.cmd-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: "▋";
+  color: var(--color-terminal-accent);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+/* Git diff colors */
+.diff-add {
+  color: var(--color-terminal-accent-soft);
+}
+.diff-add::before {
+  content: "+  ";
+  color: var(--color-terminal-accent);
+  font-weight: bold;
+}
