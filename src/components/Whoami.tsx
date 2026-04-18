@@ -138,10 +138,12 @@ export function Whoami() {
       >
         {/* Window chrome */}
         <div className="window-chrome">
-          <span className="window-dot bg-[#ff5f56]" aria-hidden />
-          <span className="window-dot bg-[#ffbd2e]" aria-hidden />
-          <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="chrome-title ml-4 text-center text-[11px] text-terminal-muted">
+          <span className="flex shrink-0 items-center gap-1.5" aria-hidden>
+            <span className="window-dot bg-[#ff5f56]" />
+            <span className="window-dot bg-[#ffbd2e]" />
+            <span className="window-dot bg-[#27c93f]" />
+          </span>
+          <span className="chrome-title min-w-0 text-center text-[11px] leading-none text-terminal-muted">
             karthick@portfolio — zsh — 80×24
           </span>
         </div>

@@ -6,7 +6,7 @@ export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-terminal-border bg-terminal-surface/80 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-3 text-[11px] text-terminal-muted backdrop-blur-sm">
-      <div className="mx-auto flex max-w-5xl flex-col flex-wrap items-start justify-between gap-2 px-[max(1rem,env(safe-area-inset-left,0px))] py-1 font-mono sm:flex-row sm:items-center sm:px-4">
+      <div className="mx-auto flex max-w-5xl flex-col flex-wrap items-start justify-between gap-2 py-1 font-mono pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))] sm:flex-row sm:items-center">
         <span className="flex items-center gap-2">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-accent animate-pulse" />
           <span className="text-terminal-accent text-glow">STATUS</span>{" "}

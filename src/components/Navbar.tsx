@@ -2,17 +2,39 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
-const links = [
-  { id: "whoami", label: "whoami" },
-  { id: "about", label: "man about" },
-  { id: "skills", label: "tree skills" },
-  { id: "experience", label: "git log" },
-  { id: "projects", label: "ls projects" },
-  { id: "contact", label: "contact" },
-] as const;
+interface ScrollLink {
+  kind: "scroll";
+  id: string;
+  label: string;
+}
+
+interface RouteLink {
+  kind: "route";
+  href: string;
+  label: string;
+  /** When true, mark active for any path that starts with this href. */
+  matchPrefix?: boolean;
+}
+
+type NavLink = ScrollLink | RouteLink;
+
+const links: NavLink[] = [
+  { kind: "scroll", id: "whoami", label: "whoami" },
+  { kind: "scroll", id: "about", label: "man about" },
+  { kind: "scroll", id: "skills", label: "tree skills" },
+  { kind: "scroll", id: "experience", label: "git log" },
+  { kind: "scroll", id: "projects", label: "ls projects" },
+  { kind: "route", href: "/tools/", label: "ls tools", matchPrefix: true },
+  { kind: "scroll", id: "contact", label: "contact" },
+];
 
 export function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const isHome = pathname === "/" || pathname === "";
   const [active, setActive] = useState("whoami");
   const headerRef = useRef<HTMLElement | null>(null);
   const scrollSpyOffsetRef = useRef(128);
@@ -39,8 +61,11 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
+    if (!isHome) return;
     let raf = 0;
-    const ids = links.map((l) => l.id);
+    const ids = links
+      .filter((l): l is ScrollLink => l.kind === "scroll")
+      .map((l) => l.id);
 
     const handleScroll = () => {
       if (lockedRef.current) return;
@@ -65,23 +90,52 @@ export function Navbar() {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isHome]);
 
-  const scrollTo = useCallback((id: string) => {
-    setActive(id);
-    lockedRef.current = true;
-    if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
-    lockTimerRef.current = setTimeout(() => {
-      lockedRef.current = false;
-    }, 1000);
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.getElementById(id)?.scrollIntoView({
-      behavior: prefersReduced ? "auto" : "smooth",
-      block: "start",
-    });
-  }, []);
+  const scrollTo = useCallback(
+    (id: string) => {
+      // Off the home page → route home with the section in the hash
+      // and let the browser handle the in-page scroll on landing.
+      if (!isHome) {
+        router.push(`/#${id}`);
+        return;
+      }
+      setActive(id);
+      lockedRef.current = true;
+      if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
+      lockTimerRef.current = setTimeout(() => {
+        lockedRef.current = false;
+      }, 1000);
+      const prefersReduced =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById(id)?.scrollIntoView({
+        behavior: prefersReduced ? "auto" : "smooth",
+        block: "start",
+      });
+    },
+    [isHome, router],
+  );
+
+  const isLinkActive = useCallback(
+    (link: NavLink): boolean => {
+      if (link.kind === "scroll") {
+        return isHome && active === link.id;
+      }
+      // Normalize trailing slashes / .html suffix so that "/tools",
+      // "/tools/", "/tools/jwt-decoder/", "/tools.html" all match a
+      // route entry whose href is "/tools/".
+      const normalize = (s: string) =>
+        s.replace(/\.html$/, "").replace(/\/$/, "");
+      const here = normalize(pathname);
+      const target = normalize(link.href);
+      if (link.matchPrefix) {
+        return here === target || here.startsWith(`${target}/`);
+      }
+      return here === target;
+    },
+    [active, isHome, pathname],
+  );
 
   return (
     <motion.header
@@ -108,24 +162,50 @@ export function Navbar() {
           className="cmd-scroll flex touch-pan-x gap-1.5 overflow-x-auto scroll-px-1 pb-1 sm:scroll-px-0"
           aria-label="Primary — scroll horizontally on small screens"
         >
-          {links.map((link, i) => (
-            <motion.button
-              key={link.id}
-              type="button"
-              onClick={() => scrollTo(link.id)}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.04, duration: 0.3 }}
-              aria-current={active === link.id ? "true" : undefined}
-              className={`min-h-11 shrink-0 rounded-md border px-3 py-2 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
-                active === link.id
-                  ? "nav-active"
-                  : "border-terminal-border bg-terminal-surface/60 text-terminal-muted hover:border-terminal-accent/40 hover:bg-terminal-surface hover:text-terminal-accent-soft"
-              }`}
-            >
-              <span className="text-terminal-muted/50">$</span> {link.label}
-            </motion.button>
-          ))}
+          {links.map((link, i) => {
+            const isActive = isLinkActive(link);
+            const baseClass = `min-h-11 shrink-0 rounded-md border px-3 py-2 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
+              isActive
+                ? "nav-active"
+                : "border-terminal-border bg-terminal-surface/60 text-terminal-muted hover:border-terminal-accent/40 hover:bg-terminal-surface hover:text-terminal-accent-soft"
+            }`;
+            const motionProps = {
+              initial: { opacity: 0, y: 8 },
+              animate: { opacity: 1, y: 0 },
+              transition: { delay: 0.1 + i * 0.04, duration: 0.3 },
+            } as const;
+            const inner = (
+              <>
+                <span className="text-terminal-muted/50">$</span> {link.label}
+              </>
+            );
+            const key = link.kind === "scroll" ? link.id : link.href;
+            if (link.kind === "route") {
+              return (
+                <motion.span key={key} {...motionProps} className="contents">
+                  <Link
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={baseClass}
+                  >
+                    {inner}
+                  </Link>
+                </motion.span>
+              );
+            }
+            return (
+              <motion.button
+                key={key}
+                type="button"
+                onClick={() => scrollTo(link.id)}
+                {...motionProps}
+                aria-current={isActive ? "true" : undefined}
+                className={baseClass}
+              >
+                {inner}
+              </motion.button>
+            );
+          })}
         </nav>
       </div>
     </motion.header>
