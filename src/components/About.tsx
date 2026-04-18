@@ -23,6 +23,7 @@ export function About() {
         </div>
 
         <div className="p-6 text-sm leading-relaxed md:p-8 md:text-[15px]">
+          <h2 className="sr-only">About</h2>
           {/* NAME */}
           <div className="flex items-center gap-3">
             <span className="text-terminal-accent text-glow font-bold tracking-wider text-xs">

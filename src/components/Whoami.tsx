@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { personal } from "@/data/resume";
 
 function TypingLine({
@@ -10,13 +10,29 @@ function TypingLine({
   charDelay = 0.022,
   className = "",
   wrap = false,
+  reduceMotion,
 }: {
   text: string;
   startDelay: number;
   charDelay?: number;
   className?: string;
   wrap?: boolean;
+  reduceMotion: boolean;
 }) {
+  if (reduceMotion) {
+    if (wrap) {
+      return (
+        <span
+          className={`text-pretty ${className}`}
+          style={{ wordBreak: "normal", overflowWrap: "break-word" }}
+        >
+          {text}
+        </span>
+      );
+    }
+    return <span className={`inline ${className}`}>{text}</span>;
+  }
+
   if (wrap) {
     const words = text.split(" ");
     let charIndex = 0;
@@ -86,7 +102,8 @@ function TypingLine({
   );
 }
 
-export function Hero() {
+export function Whoami() {
+  const reduceMotion = useReducedMotion() ?? false;
   const line1 = "whoami";
   const line2 = personal.name;
   const line3 = personal.title;
@@ -100,7 +117,7 @@ export function Hero() {
 
   return (
     <section
-      id="hero"
+      id="whoami"
       className="relative mx-auto max-w-5xl scroll-mt-24 px-4 pb-20 pt-12"
     >
       {/* Ambient glow orbs */}
@@ -114,9 +131,9 @@ export function Hero() {
       />
 
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.98 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 40, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: reduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="terminal-card gradient-border overflow-hidden rounded-xl border border-terminal-border bg-terminal-surface"
       >
         {/* Window chrome */}
@@ -132,9 +149,9 @@ export function Hero() {
         <div className="relative p-6 md:p-8">
           {/* Profile image with glow ring */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+            transition={{ delay: reduceMotion ? 0 : 0.2, duration: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
             className="mb-6 flex justify-center md:float-right md:mb-0 md:ml-8"
           >
             <div className="glow-ring rounded-xl border border-terminal-border p-1.5">
@@ -154,18 +171,22 @@ export function Hero() {
             <p className="text-terminal-muted">
               <span className="text-terminal-accent text-glow">➜</span>{" "}
               <span className="text-terminal-cyan">~</span>{" "}
-              <TypingLine text={line1} startDelay={d1} />
+              <TypingLine
+                text={line1}
+                startDelay={d1}
+                reduceMotion={reduceMotion}
+              />
             </p>
 
             <div className="border-l-2 border-terminal-accent/40 pl-4">
-              <p>
+              <h1 className="text-2xl font-bold tracking-tight text-terminal-accent text-glow md:text-3xl">
                 <TypingLine
                   text={line2}
                   startDelay={d2}
                   charDelay={0.018}
-                  className="text-2xl text-terminal-accent text-glow font-bold tracking-tight md:text-3xl"
+                  reduceMotion={reduceMotion}
                 />
-              </p>
+              </h1>
             </div>
 
             <p className="pl-4">
@@ -174,6 +195,7 @@ export function Hero() {
                 startDelay={d3}
                 charDelay={0.018}
                 className="text-terminal-cyan text-glow-cyan text-base md:text-lg"
+                reduceMotion={reduceMotion}
               />
             </p>
 
@@ -183,15 +205,17 @@ export function Hero() {
                 startDelay={d4}
                 charDelay={0.012}
                 wrap
+                reduceMotion={reduceMotion}
               />
             </p>
 
             {/* Blinking prompt */}
             <motion.p
-              initial={{ opacity: 0 }}
+              initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: dEnd }}
+              transition={{ delay: reduceMotion ? 0 : dEnd }}
               className="pt-3 text-terminal-muted"
+              aria-hidden="true"
             >
               <span className="text-terminal-accent text-glow">➜</span>{" "}
               <span className="text-terminal-cyan">~</span>{" "}

@@ -33,6 +33,7 @@ export function Projects() {
         </div>
 
         <div className="p-6 md:p-8">
+          <h2 className="sr-only">Projects</h2>
           <p className="mb-4 text-xs text-terminal-muted">
             <span className="text-terminal-accent text-glow">$</span> ls -la
             ~/projects

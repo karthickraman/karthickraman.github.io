@@ -35,6 +35,7 @@ export function Experience() {
         </div>
 
         <div className="p-6 md:p-8">
+          <h2 className="sr-only">Experience</h2>
           <p className="mb-8 text-xs text-terminal-muted">
             <span className="text-terminal-accent text-glow">$</span> git log
             --reverse --pretty=fuller career
@@ -52,7 +53,7 @@ export function Experience() {
 
               return (
                 <motion.article
-                  key={`${job.company}-${job.role}`}
+                  key={`${job.company}-${job.role}-${job.period}`}
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
@@ -88,7 +89,7 @@ export function Experience() {
                   </p>
 
                   <div className="mt-4 rounded-lg border border-terminal-border/50 bg-terminal-bg/60 p-4">
-                    <p className="font-semibold text-terminal-body">
+                    <h3 className="font-semibold text-terminal-body">
                       {job.role}{" "}
                       <span className="text-terminal-muted">@</span>{" "}
                       <span className="text-terminal-cyan text-glow-cyan">
@@ -98,7 +99,7 @@ export function Experience() {
                         {" "}
                         — {job.location}
                       </span>
-                    </p>
+                    </h3>
                     <p className="mt-2 text-pretty text-terminal-muted">
                       {job.description}
                     </p>

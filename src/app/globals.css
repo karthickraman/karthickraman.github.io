@@ -11,7 +11,7 @@
   --color-terminal-accent-dim: rgba(0, 255, 65, 0.08);
   --color-terminal-cyan: #00ffd5;
   --color-terminal-body: #c9d1d9;
-  --color-terminal-muted: #6b7d8e;
+  --color-terminal-muted: #7d8fa3;
   --color-terminal-yellow: #f0a500;
   --color-terminal-red: #ff6b6b;
   --color-terminal-blue: #79c0ff;
@@ -21,8 +21,10 @@
   --font-display: var(--font-instrument), Georgia, "Times New Roman", serif;
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -155,10 +157,14 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .cursor-blink::after {
+    animation: blink 1s step-end infinite;
+  }
+}
 .cursor-blink::after {
   content: "▋";
   color: var(--color-terminal-accent);
-  animation: blink 1s step-end infinite;
   margin-left: 2px;
   text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
 }
@@ -227,6 +233,11 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .animated-gradient-line {
+    animation: gradient-shift 4s linear infinite;
+  }
+}
 .animated-gradient-line {
   height: 2px;
   background: linear-gradient(
@@ -238,7 +249,6 @@ body {
     transparent
   );
   background-size: 200% 100%;
-  animation: gradient-shift 4s linear infinite;
 }
 
 /* ── Profile glow ring ── */
@@ -257,18 +267,6 @@ body {
   background: rgba(0, 255, 213, 0.06);
   box-shadow: 0 0 16px rgba(0, 255, 213, 0.08);
   transform: translateY(-1px);
-}
-
-/* ── Fade-in from bottom (CSS-only fallback) ── */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* ── Timeline connector line ── */

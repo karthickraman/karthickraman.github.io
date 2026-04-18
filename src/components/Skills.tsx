@@ -28,6 +28,7 @@ export function Skills() {
         </div>
 
         <div className="p-6 md:p-8">
+          <h2 className="sr-only">Skills</h2>
           <p className="mb-6 text-xs text-terminal-muted">
             <span className="text-terminal-accent text-glow">$</span> tree
             ~/stack --group-directories-first
@@ -45,7 +46,10 @@ export function Skills() {
                 className="group rounded-lg border border-terminal-border/60 bg-terminal-bg/50 p-4 transition-all duration-300 hover:border-terminal-accent/20 hover:bg-terminal-bg/80"
               >
                 <div className="mb-3 flex items-center gap-2">
-                  <span className="text-terminal-yellow font-semibold text-sm">
+                  <span
+                    className="text-terminal-yellow font-semibold text-sm"
+                    aria-hidden
+                  >
                     📂
                   </span>
                   <span className="text-terminal-yellow font-semibold text-sm">

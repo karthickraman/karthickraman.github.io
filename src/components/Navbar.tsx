@@ -1,42 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 
 const links = [
-  { id: "hero", label: "~/hero" },
+  { id: "whoami", label: "whoami" },
   { id: "about", label: "man about" },
   { id: "skills", label: "tree skills" },
   { id: "experience", label: "git log" },
   { id: "projects", label: "ls projects" },
-  { id: "contact", label: "./contact" },
+  { id: "contact", label: "contact" },
 ] as const;
 
 export function Navbar() {
-  const [active, setActive] = useState("hero");
+  const [active, setActive] = useState("whoami");
 
   useEffect(() => {
+    let raf = 0;
+    const ids = links.map((l) => l.id);
+
     const handleScroll = () => {
-      const ids = links.map((l) => l.id);
-      for (let i = ids.length - 1; i >= 0; i--) {
-        const el = document.getElementById(ids[i]);
-        if (el && el.getBoundingClientRect().top <= 120) {
-          setActive(ids[i]);
-          return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        let next = "whoami";
+        for (let i = ids.length - 1; i >= 0; i--) {
+          const el = document.getElementById(ids[i]);
+          if (el && el.getBoundingClientRect().top <= 120) {
+            next = ids[i];
+            break;
+          }
         }
-      }
-      setActive("hero");
+        setActive((prev) => (prev === next ? prev : next));
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const scrollTo = (id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const scrollTo = useCallback((id: string) => {
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(id)?.scrollIntoView({
+      behavior: prefersReduced ? "auto" : "smooth",
+      block: "start",
+    });
+  }, []);
 
   return (
     <motion.header
@@ -70,10 +84,11 @@ export function Navbar() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.04, duration: 0.3 }}
-              className={`shrink-0 rounded-md border px-3 py-1.5 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
+              aria-current={active === link.id ? "true" : undefined}
+              className={`min-h-11 shrink-0 rounded-md border px-3 py-2 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
                 active === link.id
                   ? "nav-active"
-                  : "border-terminal-border bg-terminal-surface/60 text-terminal-muted hover:border-terminal-accent/40 hover:text-terminal-accent-soft hover:bg-terminal-surface"
+                  : "border-terminal-border bg-terminal-surface/60 text-terminal-muted hover:border-terminal-accent/40 hover:bg-terminal-surface hover:text-terminal-accent-soft"
               }`}
             >
               <span className="text-terminal-muted/50">$</span> {link.label}
