@@ -65,6 +65,7 @@ export function Navbar() {
   }, []);
 
   const scrollTo = useCallback((id: string) => {
+    setActive(id);
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
