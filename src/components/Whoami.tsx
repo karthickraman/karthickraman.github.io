@@ -118,7 +118,7 @@ export function Whoami() {
   return (
     <section
       id="whoami"
-      className="relative mx-auto max-w-5xl scroll-mt-24 px-4 pb-20 pt-12"
+      className="relative mx-auto max-w-5xl overflow-hidden scroll-mt-32 px-4 pb-20 pt-8 md:scroll-mt-28 md:pt-12"
     >
       {/* Ambient glow orbs */}
       <div
@@ -141,12 +141,12 @@ export function Whoami() {
           <span className="window-dot bg-[#ff5f56]" aria-hidden />
           <span className="window-dot bg-[#ffbd2e]" aria-hidden />
           <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="ml-4 flex-1 truncate text-center text-[11px] text-terminal-muted">
+          <span className="chrome-title ml-4 text-center text-[11px] text-terminal-muted">
             karthick@portfolio — zsh — 80×24
           </span>
         </div>
 
-        <div className="relative p-6 md:p-8">
+        <div className="relative p-4 sm:p-6 md:p-8">
           {/* Profile image with glow ring */}
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}

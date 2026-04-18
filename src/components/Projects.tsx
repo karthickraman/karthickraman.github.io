@@ -14,7 +14,7 @@ export function Projects() {
   return (
     <section
       id="projects"
-      className="mx-auto max-w-5xl scroll-mt-24 px-4 py-16"
+      className="mx-auto max-w-5xl scroll-mt-32 px-4 py-16 md:scroll-mt-28"
     >
       <motion.div
         initial={{ opacity: 0, y: 32 }}
@@ -27,12 +27,12 @@ export function Projects() {
           <span className="window-dot bg-[#ff5f56]" aria-hidden />
           <span className="window-dot bg-[#ffbd2e]" aria-hidden />
           <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="ml-4 text-[11px] text-terminal-muted">
+          <span className="chrome-title ml-4 text-[11px] text-terminal-muted">
             ls -la ~/projects
           </span>
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           <h2 className="sr-only">Projects</h2>
           <p className="mb-4 text-xs text-terminal-muted">
             <span className="text-terminal-accent text-glow">$</span> ls -la

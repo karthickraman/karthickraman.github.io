@@ -31,6 +31,7 @@ body {
   background-color: var(--color-terminal-bg);
   color: var(--color-terminal-body);
   font-family: var(--font-mono);
+  overflow-x: clip;
 }
 
 ::selection {
@@ -134,7 +135,16 @@ body {
   background: rgba(0, 255, 65, 0.06) !important;
 }
 
-/* ── Thin scrollbar for command bar ── */
+/* ── Horizontal command nav (touch / overflow) ── */
+.cmd-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
+}
+.cmd-scroll > * {
+  scroll-snap-align: start;
+}
 .cmd-scroll::-webkit-scrollbar {
   height: 3px;
 }
@@ -200,9 +210,18 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
   border-bottom: 1px solid var(--color-terminal-border);
   background: var(--color-terminal-bg);
-  padding: 8px 12px;
+  padding: 8px max(12px, env(safe-area-inset-right, 0px)) 8px
+    max(12px, env(safe-area-inset-left, 0px));
+}
+.window-chrome > .chrome-title {
+  min-width: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .window-dot {
   width: 10px;

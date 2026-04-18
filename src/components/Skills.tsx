@@ -9,7 +9,7 @@ export function Skills() {
   return (
     <section
       id="skills"
-      className="mx-auto max-w-5xl scroll-mt-24 px-4 py-16"
+      className="mx-auto max-w-5xl scroll-mt-32 px-4 py-16 md:scroll-mt-28"
     >
       <motion.div
         initial={{ opacity: 0, y: 32 }}
@@ -22,14 +22,14 @@ export function Skills() {
           <span className="window-dot bg-[#ff5f56]" aria-hidden />
           <span className="window-dot bg-[#ffbd2e]" aria-hidden />
           <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="ml-4 text-[11px] text-terminal-muted">
+          <span className="chrome-title ml-4 text-[11px] text-terminal-muted">
             tree ~/stack
           </span>
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           <h2 className="sr-only">Skills</h2>
-          <p className="mb-6 text-xs text-terminal-muted">
+          <p className="mb-6 break-words text-xs text-terminal-muted">
             <span className="text-terminal-accent text-glow">$</span> tree
             ~/stack --group-directories-first
           </p>

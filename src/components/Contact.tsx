@@ -70,7 +70,7 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="relative mx-auto max-w-5xl scroll-mt-24 px-4 py-16"
+      className="relative mx-auto max-w-5xl overflow-hidden scroll-mt-32 px-4 py-16 md:scroll-mt-28"
     >
       {/* Ambient glow */}
       <div
@@ -89,12 +89,12 @@ export function Contact() {
           <span className="window-dot bg-[#ff5f56]" aria-hidden />
           <span className="window-dot bg-[#ffbd2e]" aria-hidden />
           <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="ml-4 text-[11px] text-terminal-muted">
+          <span className="chrome-title ml-4 text-[11px] text-terminal-muted">
             ./contact.sh — send a message
           </span>
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           <h2 className="sr-only">Contact</h2>
           {/* Links */}
           <p className="mb-4 text-xs text-terminal-muted">
@@ -148,10 +148,10 @@ export function Contact() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <input type="hidden" name="from_name" value="Portfolio Contact Form" />
             <input type="checkbox" name="botcheck" className="hidden" style={{ display: "none" }} />
-            <div className="flex flex-wrap items-center gap-3 text-sm sm:flex-nowrap">
+            <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-nowrap sm:items-center sm:gap-3">
               <label
                 htmlFor="contact-name"
-                className="w-16 shrink-0 text-right text-terminal-yellow"
+                className="shrink-0 text-terminal-yellow sm:w-16 sm:text-right"
               >
                 From:
               </label>
@@ -161,14 +161,14 @@ export function Contact() {
                 name="name"
                 required
                 autoComplete="name"
-                className="min-h-11 flex-1 rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200"
+                className="min-h-11 w-full rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200 sm:flex-1"
                 placeholder="your name"
               />
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm sm:flex-nowrap">
+            <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-nowrap sm:items-center sm:gap-3">
               <label
                 htmlFor="contact-email"
-                className="w-16 shrink-0 text-right text-terminal-yellow"
+                className="shrink-0 text-terminal-yellow sm:w-16 sm:text-right"
               >
                 Email:
               </label>
@@ -178,14 +178,14 @@ export function Contact() {
                 name="email"
                 required
                 autoComplete="email"
-                className="min-h-11 flex-1 rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200"
+                className="min-h-11 w-full rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200 sm:flex-1"
                 placeholder="your@email.com"
               />
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm sm:flex-nowrap">
+            <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-nowrap sm:items-center sm:gap-3">
               <label
                 htmlFor="contact-subject"
-                className="w-16 shrink-0 text-right text-terminal-yellow"
+                className="shrink-0 text-terminal-yellow sm:w-16 sm:text-right"
               >
                 Subject:
               </label>
@@ -193,14 +193,14 @@ export function Contact() {
                 id="contact-subject"
                 type="text"
                 name="Subject"
-                className="min-h-11 flex-1 rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200"
+                className="min-h-11 w-full rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200 sm:flex-1"
                 placeholder="let's connect"
               />
             </div>
-            <div className="flex flex-wrap gap-3 text-sm sm:flex-nowrap">
+            <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-nowrap sm:gap-3">
               <label
                 htmlFor="contact-message"
-                className="mt-2 w-16 shrink-0 text-right text-terminal-yellow sm:mt-2"
+                className="shrink-0 pt-0.5 text-terminal-yellow sm:mt-2 sm:w-16 sm:text-right"
               >
                 Message:
               </label>
@@ -210,11 +210,11 @@ export function Contact() {
                 required
                 rows={4}
                 autoComplete="off"
-                className="min-h-24 flex-1 resize-none rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200"
+                className="min-h-28 w-full resize-y rounded-lg border border-terminal-border bg-terminal-bg/60 px-3 py-2 text-sm text-terminal-body placeholder-terminal-muted/40 outline-none transition-all duration-200 sm:min-h-24 sm:flex-1"
                 placeholder="your message here..."
               />
             </div>
-            <div className="flex flex-wrap items-center gap-3 pl-0 sm:pl-[76px]">
+            <div className="flex flex-col gap-3 pl-0 sm:flex-row sm:flex-wrap sm:items-center sm:pl-[76px]">
               <button
                 type="submit"
                 disabled={status === "sending"}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
@@ -16,6 +16,13 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const siteUrl = "https://karthickraman.github.io";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0e14",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

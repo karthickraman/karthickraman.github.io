@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 
 const links = [
@@ -14,6 +14,27 @@ const links = [
 
 export function Navbar() {
   const [active, setActive] = useState("whoami");
+  const headerRef = useRef<HTMLElement | null>(null);
+  const scrollSpyOffsetRef = useRef(128);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+
+    const updateOffset = () => {
+      scrollSpyOffsetRef.current =
+        Math.ceil(el.getBoundingClientRect().height) + 10;
+    };
+
+    updateOffset();
+    const ro = new ResizeObserver(updateOffset);
+    ro.observe(el);
+    window.addEventListener("resize", updateOffset);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", updateOffset);
+    };
+  }, []);
 
   useEffect(() => {
     let raf = 0;
@@ -22,10 +43,11 @@ export function Navbar() {
     const handleScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
+        const y = scrollSpyOffsetRef.current;
         let next = "whoami";
         for (let i = ids.length - 1; i >= 0; i--) {
           const el = document.getElementById(ids[i]);
-          if (el && el.getBoundingClientRect().top <= 120) {
+          if (el && el.getBoundingClientRect().top <= y) {
             next = ids[i];
             break;
           }
@@ -54,27 +76,28 @@ export function Navbar() {
 
   return (
     <motion.header
+      ref={headerRef}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="glass sticky top-0 z-50 border-b border-terminal-border/60"
+      className="glass sticky top-0 z-50 border-b border-terminal-border/60 pt-[env(safe-area-inset-top,0px)]"
     >
-      <div className="mx-auto max-w-5xl px-4 py-3">
-        <div className="mb-2.5 flex items-center gap-2 text-xs text-terminal-muted">
+      <div className="mx-auto max-w-5xl py-3 pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))]">
+        <div className="mb-2.5 flex min-w-0 items-center gap-2 text-xs text-terminal-muted">
           <span className="text-terminal-accent text-glow">$</span>
-          <span className="truncate text-terminal-body/80">
+          <span className="min-w-0 truncate text-terminal-body/80">
             exec portfolio-nav
           </span>
-          <span className="ml-auto flex items-center gap-1.5">
+          <span className="ml-auto flex shrink-0 items-center gap-1.5">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-accent animate-pulse" />
-            <span className="text-terminal-accent/60 text-[10px]">
+            <span className="hidden text-terminal-accent/60 text-[10px] sm:inline">
               session active
             </span>
           </span>
         </div>
         <nav
-          className="cmd-scroll flex gap-1.5 overflow-x-auto pb-1"
-          aria-label="Primary"
+          className="cmd-scroll flex touch-pan-x gap-1.5 overflow-x-auto scroll-px-1 pb-1 sm:scroll-px-0"
+          aria-label="Primary — scroll horizontally on small screens"
         >
           {links.map((link, i) => (
             <motion.button

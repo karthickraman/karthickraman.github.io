@@ -5,7 +5,10 @@ import { about, education, certifications, languages, personal } from "@/data/re
 
 export function About() {
   return (
-    <section id="about" className="mx-auto max-w-5xl scroll-mt-24 px-4 py-16">
+    <section
+      id="about"
+      className="mx-auto max-w-5xl scroll-mt-32 px-4 py-16 md:scroll-mt-28"
+    >
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -17,12 +20,12 @@ export function About() {
           <span className="window-dot bg-[#ff5f56]" aria-hidden />
           <span className="window-dot bg-[#ffbd2e]" aria-hidden />
           <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="ml-4 text-[11px] text-terminal-muted">
+          <span className="chrome-title ml-4 text-[11px] text-terminal-muted">
             man 1 {personal.name.split(" ")[0].toLowerCase()}
           </span>
         </div>
 
-        <div className="p-6 text-sm leading-relaxed md:p-8 md:text-[15px]">
+        <div className="p-4 text-sm leading-relaxed sm:p-6 md:p-8 md:text-[15px]">
           <h2 className="sr-only">About</h2>
           {/* NAME */}
           <div className="flex items-center gap-3">

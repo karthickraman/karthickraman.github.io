@@ -17,10 +17,10 @@ function SectionDivider() {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-terminal-bg pb-16 font-mono text-terminal-body">
+    <main className="min-h-screen bg-terminal-bg pb-[calc(4rem+env(safe-area-inset-bottom,0px))] font-mono text-terminal-body">
       <a
         href="#whoami"
-        className="fixed left-4 top-0 z-[100] -translate-y-full rounded-md border border-terminal-accent/40 bg-terminal-surface px-4 py-2 text-sm font-medium text-terminal-accent shadow-lg transition-transform focus:translate-y-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-terminal-accent focus-visible:ring-offset-2 focus-visible:ring-offset-terminal-bg"
+        className="fixed left-[max(1rem,env(safe-area-inset-left,0px))] top-0 z-[100] -translate-y-full rounded-md border border-terminal-accent/40 bg-terminal-surface px-4 py-2 text-sm font-medium text-terminal-accent shadow-lg transition-transform focus:translate-y-[max(1rem,env(safe-area-inset-top,0.5rem))] focus:outline-none focus-visible:ring-2 focus-visible:ring-terminal-accent focus-visible:ring-offset-2 focus-visible:ring-offset-terminal-bg"
       >
         Skip to content
       </a>

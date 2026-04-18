@@ -16,7 +16,7 @@ export function Experience() {
   return (
     <section
       id="experience"
-      className="mx-auto max-w-5xl scroll-mt-24 px-4 py-16"
+      className="mx-auto max-w-5xl scroll-mt-32 px-4 py-16 md:scroll-mt-28"
     >
       <motion.div
         initial={{ opacity: 0, y: 32 }}
@@ -29,14 +29,14 @@ export function Experience() {
           <span className="window-dot bg-[#ff5f56]" aria-hidden />
           <span className="window-dot bg-[#ffbd2e]" aria-hidden />
           <span className="window-dot bg-[#27c93f]" aria-hidden />
-          <span className="ml-4 text-[11px] text-terminal-muted">
+          <span className="chrome-title ml-4 text-[11px] text-terminal-muted">
             git log --pretty=fuller career
           </span>
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-4 sm:p-6 md:p-8">
           <h2 className="sr-only">Experience</h2>
-          <p className="mb-8 text-xs text-terminal-muted">
+          <p className="mb-8 break-words text-xs text-terminal-muted">
             <span className="text-terminal-accent text-glow">$</span> git log
             --reverse --pretty=fuller career
           </p>
@@ -58,7 +58,7 @@ export function Experience() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.45, delay: index * 0.06 }}
-                  className="relative py-6 pl-6 text-sm"
+                  className="relative min-w-0 py-5 pl-5 text-sm sm:py-6 sm:pl-6"
                 >
                   {/* Timeline dot */}
                   <div
@@ -78,7 +78,7 @@ export function Experience() {
                       </span>
                     )}
                   </p>
-                  <p className="mt-1 text-xs text-terminal-muted">
+                  <p className="mt-1 break-words text-xs text-terminal-muted">
                     Author: {personal.name} &lt;
                     <span className="text-terminal-blue">{personal.email}</span>
                     &gt;
@@ -88,14 +88,14 @@ export function Experience() {
                     <span className="text-terminal-body">{job.period}</span>
                   </p>
 
-                  <div className="mt-4 rounded-lg border border-terminal-border/50 bg-terminal-bg/60 p-4">
-                    <h3 className="font-semibold text-terminal-body">
-                      {job.role}{" "}
+                  <div className="mt-4 rounded-lg border border-terminal-border/50 bg-terminal-bg/60 p-3 sm:p-4">
+                    <h3 className="text-pretty text-base font-semibold leading-snug text-terminal-body sm:text-lg">
+                      <span>{job.role}</span>{" "}
                       <span className="text-terminal-muted">@</span>{" "}
                       <span className="text-terminal-cyan text-glow-cyan">
                         {job.company}
                       </span>
-                      <span className="text-terminal-muted">
+                      <span className="mt-1 block text-sm font-normal text-terminal-muted sm:mt-0 sm:inline sm:text-base sm:font-semibold">
                         {" "}
                         — {job.location}
                       </span>
