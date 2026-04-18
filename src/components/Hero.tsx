@@ -9,12 +9,53 @@ function TypingLine({
   startDelay,
   charDelay = 0.022,
   className = "",
+  wrap = false,
 }: {
   text: string;
   startDelay: number;
   charDelay?: number;
   className?: string;
+  wrap?: boolean;
 }) {
+  if (wrap) {
+    const words = text.split(" ");
+    let charIndex = 0;
+    return (
+      <span className={`text-pretty ${className}`} style={{ wordBreak: "normal", overflowWrap: "break-word" }}>
+        {words.map((word, wi) => {
+          const startIdx = charIndex;
+          charIndex += word.length + 1;
+          return (
+            <span key={wi}>
+              <span className="inline-block">
+                {word.split("").map((char, ci) => (
+                  <motion.span
+                    key={`${startDelay}-${startIdx + ci}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: startDelay + (startIdx + ci) * charDelay, duration: 0.01 }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </span>
+              {wi < words.length - 1 && (
+                <motion.span
+                  key={`${startDelay}-sp-${wi}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: startDelay + (startIdx + word.length) * charDelay, duration: 0.01 }}
+                >
+                  {" "}
+                </motion.span>
+              )}
+            </span>
+          );
+        })}
+      </span>
+    );
+  }
+
   const chars = text.split("");
   return (
     <span className={`inline ${className}`}>
@@ -113,7 +154,7 @@ export function Hero() {
             </p>
 
             <p className="pl-3 text-sm text-terminal-muted md:text-[15px]">
-              <TypingLine text={line4} startDelay={d4} charDelay={0.012} />
+              <TypingLine text={line4} startDelay={d4} charDelay={0.012} wrap />
             </p>
 
             {/* Blinking prompt */}
