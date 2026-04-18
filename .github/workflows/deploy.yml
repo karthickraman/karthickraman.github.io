@@ -10,6 +10,7 @@ on:
         options:
           - master
           - sweden-neutral-resume
+          - sweden-portfolio-plus-tools
 
 permissions:
   contents: read
