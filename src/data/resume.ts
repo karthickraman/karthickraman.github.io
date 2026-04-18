@@ -6,7 +6,6 @@ export const personal = {
   email: "thekarthickraman@gmail.com",
   linkedin: "https://linkedin.com/in/karthick-pattabiraman",
   github: "https://github.com/karthickraman",
-  resumeUrl: "/resume.pdf",
 };
 
 export const about = {
