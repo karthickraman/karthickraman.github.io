@@ -1,17 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Instrument_Serif } from "next/font/google";
+import Script from "next/script";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { THEME_COLOR_DARK, themeBootstrapScript } from "@/lib/theme";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -21,7 +17,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0a0e14",
 };
 
 export const metadata: Metadata = {
@@ -68,16 +63,27 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jetbrainsMono.variable} ${instrumentSerif.variable}`}
-      style={{ colorScheme: "dark" }}
+      suppressHydrationWarning
+      className={jetbrainsMono.variable}
     >
+      <head>
+        <meta
+          name="theme-color"
+          content={THEME_COLOR_DARK}
+          id="theme-color-meta"
+        />
+      </head>
       <body className="dot-grid noise-overlay scanlines min-h-screen antialiased">
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeBootstrapScript()}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(personJsonLd),
           }}
         />
+        <GoogleAnalytics />
         {children}
       </body>
     </html>

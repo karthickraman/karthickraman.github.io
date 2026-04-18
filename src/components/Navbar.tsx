@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+const MotionLink = motion(Link);
 
 interface ScrollLink {
   kind: "scroll";
@@ -34,6 +37,7 @@ const links: NavLink[] = [
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const reduceMotion = useReducedMotion() ?? false;
   const isHome = pathname === "/" || pathname === "";
   const [active, setActive] = useState("whoami");
   const headerRef = useRef<HTMLElement | null>(null);
@@ -140,18 +144,20 @@ export function Navbar() {
   return (
     <motion.header
       ref={headerRef}
-      initial={{ opacity: 0, y: -20 }}
+      initial={reduceMotion ? false : { opacity: 1, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="glass sticky top-0 z-50 border-b border-terminal-border/60 pt-[env(safe-area-inset-top,0px)]"
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className="glass sticky top-0 z-50 border-b border-terminal-border/60 pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-[max(1.25rem,env(safe-area-inset-top,0px))]"
     >
-      <div className="mx-auto max-w-5xl py-3 pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))]">
-        <div className="mb-2.5 flex min-w-0 items-center gap-2 text-xs text-terminal-muted">
-          <span className="text-terminal-accent text-glow">$</span>
-          <span className="min-w-0 truncate text-terminal-body/80">
-            exec portfolio-nav
+      <div className="mx-auto max-w-5xl pt-5 pb-3 pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))] sm:pt-6 sm:pb-4">
+        <div className="mb-4 flex min-w-0 items-center gap-2 text-xs text-terminal-muted sm:mb-5">
+          <span className="min-w-0 flex-1 truncate font-mono">
+            <span className="text-terminal-accent text-glow">$</span>
+            {" "}
+            <span className="text-terminal-body/80">exec portfolio-nav</span>
           </span>
-          <span className="ml-auto flex shrink-0 items-center gap-1.5">
+          <span className="ml-auto flex shrink-0 items-center gap-2">
+            <ThemeToggle />
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-accent animate-pulse" />
             <span className="hidden text-terminal-accent/60 text-[10px] sm:inline">
               session active
@@ -159,38 +165,40 @@ export function Navbar() {
           </span>
         </div>
         <nav
-          className="cmd-scroll flex touch-pan-x gap-1.5 overflow-x-auto scroll-px-1 pb-1 sm:scroll-px-0"
+          className="cmd-scroll flex touch-pan-x items-center gap-2 overflow-x-auto scroll-px-2 pb-0.5 sm:gap-2.5 sm:scroll-px-0 sm:pb-1"
           aria-label="Primary — scroll horizontally on small screens"
         >
           {links.map((link, i) => {
             const isActive = isLinkActive(link);
-            const baseClass = `min-h-11 shrink-0 rounded-md border px-3 py-2 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
+            const baseClass = `inline-flex min-h-11 shrink-0 items-center rounded-md border px-3.5 py-2.5 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent sm:px-4 sm:py-3 ${
               isActive
                 ? "nav-active"
                 : "border-terminal-border bg-terminal-surface/60 text-terminal-muted hover:border-terminal-accent/40 hover:bg-terminal-surface hover:text-terminal-accent-soft"
             }`;
             const motionProps = {
-              initial: { opacity: 0, y: 8 },
+              initial: reduceMotion ? false : { opacity: 1, y: 6 },
               animate: { opacity: 1, y: 0 },
-              transition: { delay: 0.1 + i * 0.04, duration: 0.3 },
+              transition: { delay: 0.06 + i * 0.03, duration: 0.28 },
             } as const;
             const inner = (
-              <>
-                <span className="text-terminal-muted/50">$</span> {link.label}
-              </>
+              <span className="font-mono">
+                <span className="text-terminal-muted/50">$</span>
+                {" "}
+                <span>{link.label}</span>
+              </span>
             );
             const key = link.kind === "scroll" ? link.id : link.href;
             if (link.kind === "route") {
               return (
-                <motion.span key={key} {...motionProps} className="contents">
-                  <Link
-                    href={link.href}
-                    aria-current={isActive ? "page" : undefined}
-                    className={baseClass}
-                  >
-                    {inner}
-                  </Link>
-                </motion.span>
+                <MotionLink
+                  key={key}
+                  href={link.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={baseClass}
+                  {...motionProps}
+                >
+                  {inner}
+                </MotionLink>
               );
             }
             return (

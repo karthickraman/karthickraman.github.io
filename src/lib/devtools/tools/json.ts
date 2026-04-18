@@ -11,23 +11,127 @@ function extractPosition(message: string): number | undefined {
   return m ? Number(m[1]) : undefined;
 }
 
+function typeTag(v: unknown): "null" | "array" | "object" | "primitive" {
+  if (v === null) return "null";
+  if (Array.isArray(v)) return "array";
+  if (typeof v === "object") return "object";
+  return "primitive";
+}
+
+function walkDiff(a: unknown, b: unknown, path: string, lines: OutputLine[]): void {
+  const ta = typeTag(a);
+  const tb = typeTag(b);
+  if (ta !== tb) {
+    lines.push({
+      text: `~ ${path}: ${JSON.stringify(a)} → ${JSON.stringify(b)}  (${ta} → ${tb})`,
+      kind: "warn",
+    });
+    return;
+  }
+
+  if (ta === "null" || ta === "primitive") {
+    if (a !== b) {
+      lines.push({
+        text: `~ ${path}: ${JSON.stringify(a)} → ${JSON.stringify(b)}`,
+        kind: "warn",
+      });
+    }
+    return;
+  }
+
+  if (ta === "array") {
+    const aa = a as unknown[];
+    const bb = b as unknown[];
+    if (aa.length !== bb.length) {
+      lines.push({
+        text: `~ ${path}: array length ${aa.length} → ${bb.length}`,
+        kind: "warn",
+      });
+    }
+    const n = Math.max(aa.length, bb.length);
+    for (let i = 0; i < n; i++) {
+      const p = `${path}[${i}]`;
+      if (i >= aa.length) {
+        lines.push({ text: `+ ${p}: ${JSON.stringify(bb[i])}`, kind: "success" });
+      } else if (i >= bb.length) {
+        lines.push({ text: `- ${p}: ${JSON.stringify(aa[i])}`, kind: "error" });
+      } else {
+        walkDiff(aa[i], bb[i], p, lines);
+      }
+    }
+    return;
+  }
+
+  const oa = a as Record<string, unknown>;
+  const ob = b as Record<string, unknown>;
+  const keys = new Set([...Object.keys(oa), ...Object.keys(ob)]);
+  for (const k of [...keys].sort()) {
+    const p = path === "$" ? `$.${k}` : `${path}.${k}`;
+    if (!(k in oa)) {
+      lines.push({ text: `+ ${p}: ${JSON.stringify(ob[k])}`, kind: "success" });
+    } else if (!(k in ob)) {
+      lines.push({ text: `- ${p}: ${JSON.stringify(oa[k])}`, kind: "error" });
+    } else {
+      walkDiff(oa[k], ob[k], p, lines);
+    }
+  }
+}
+
 export const jsonTool: Tool = {
   name: "json",
   category: "validate",
   description: "Pretty-print and validate JSON. Reports line/column on error.",
-  usage: "json <text>  |  json minify <text>  |  json sort <text>",
+  usage: "json <text>  |  json minify <text>  |  json sort <text>  |  json diff <a>↵---↵<b>",
   examples: [
     'json {"name":"karthick","skills":["java","go"]}',
     'json minify {"a": 1, "b": 2}',
     'json sort {"z":1,"a":2}',
+    "json diff {\"a\":1}\n---\n{\"a\":1,\"b\":2}",
   ],
   run(args) {
     const trimmed = args.trim();
     if (!trimmed) return err("Missing JSON input.");
 
+    const first = trimmed.split(/\s+/)[0]?.toLowerCase();
+
+    if (first === "diff") {
+      const firstWord = trimmed.split(/\s+/)[0] ?? "diff";
+      const payload = trimmed.slice(firstWord.length).trim();
+      const chunks = payload.split(/\n---\s*\r?\n/);
+      if (chunks.length !== 2) {
+        return err(
+          "json diff expects two JSON documents separated by a line containing only ---.",
+          "Example: first JSON, blank line optional, a line with exactly ---, then the second JSON.",
+        );
+      }
+      const [leftRaw, rightRaw] = chunks.map((s) => s.trim());
+      if (!leftRaw || !rightRaw) {
+        return err("json diff needs non-empty JSON on both sides of ---.");
+      }
+      let left: unknown;
+      let right: unknown;
+      try {
+        left = JSON.parse(leftRaw);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : "Parse error";
+        return err(`left JSON: ${message}`);
+      }
+      try {
+        right = JSON.parse(rightRaw);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : "Parse error";
+        return err(`right JSON: ${message}`);
+      }
+      const lines: OutputLine[] = [{ text: "structural diff (left → right):", kind: "label" }];
+      walkDiff(left, right, "$", lines);
+      if (lines.length === 1) {
+        lines.push({ text: "no differences — structurally identical.", kind: "success" });
+      }
+      return ok(lines);
+    }
+
     let mode: "pretty" | "minify" | "sort" = "pretty";
     let payload = trimmed;
-    const first = trimmed.split(/\s+/)[0]?.toLowerCase();
     if (first === "minify" || first === "sort" || first === "pretty") {
       mode = first === "pretty" ? "pretty" : (first as "minify" | "sort");
       payload = trimmed.slice(first.length).trim();

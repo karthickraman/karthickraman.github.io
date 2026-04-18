@@ -59,6 +59,10 @@ function parseInput(raw: string): { date: Date; source: string } | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
 
+  if (/^now$/i.test(trimmed)) {
+    return { date: new Date(), source: "now" };
+  }
+
   // Numeric epoch (auto-detect unit)
   if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
     const n = Number(trimmed);
@@ -98,6 +102,7 @@ export const epochTool: Tool = {
   usage: "epoch [timestamp | iso-date]",
   examples: [
     "epoch",
+    "epoch now",
     "epoch 1700000000",
     "epoch 1700000000000",
     "epoch 2026-04-18T12:30:00Z",

@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import type { ToolContent } from "@/lib/tools-content";
 import { ToolWidget } from "./ToolWidget";
+import { JsonToolWidget } from "./JsonToolWidget";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ToolFAQ } from "./ToolFAQ";
 import { RelatedTools } from "./RelatedTools";
@@ -8,9 +10,11 @@ import { ToolJsonLd } from "./JsonLd";
 
 interface ToolPageShellProps {
   tool: ToolContent;
+  /** Optional rich UI rendered after the hero and before the terminal widget. */
+  beforeWidget?: ReactNode;
 }
 
-export function ToolPageShell({ tool }: ToolPageShellProps) {
+export function ToolPageShell({ tool, beforeWidget }: ToolPageShellProps) {
   const presets = tool.examples
     .filter((e) => e.input && e.input !== tool.defaultInput)
     .slice(0, 4)
@@ -32,7 +36,7 @@ export function ToolPageShell({ tool }: ToolPageShellProps) {
         <p className="font-mono text-xs uppercase tracking-[0.25em] text-terminal-cyan">
           $ exec {tool.toolName}
         </p>
-        <h1 className="font-display text-4xl font-normal leading-snug tracking-tight text-terminal-body sm:text-5xl">
+        <h1 className="font-mono text-3xl font-semibold leading-snug tracking-tight text-terminal-body sm:text-4xl">
           {tool.h1}
         </h1>
         <p className="max-w-3xl text-base leading-relaxed text-terminal-muted sm:text-lg">
@@ -40,14 +44,26 @@ export function ToolPageShell({ tool }: ToolPageShellProps) {
         </p>
       </header>
 
-      <ToolWidget
-        toolName={tool.toolName}
-        defaultInput={tool.defaultInput}
-        inputLabel={tool.inputLabel}
-        inputPlaceholder={tool.inputPlaceholder}
-        inputRows={tool.inputRows}
-        presets={presets}
-      />
+      {beforeWidget ? <div className="space-y-4">{beforeWidget}</div> : null}
+
+      {tool.slug === "json-formatter" ? (
+        <JsonToolWidget
+          defaultInput={tool.defaultInput}
+          inputLabel={tool.inputLabel}
+          inputPlaceholder={tool.inputPlaceholder}
+          inputRows={tool.inputRows}
+          presets={presets}
+        />
+      ) : (
+        <ToolWidget
+          toolName={tool.toolName}
+          defaultInput={tool.defaultInput}
+          inputLabel={tool.inputLabel}
+          inputPlaceholder={tool.inputPlaceholder}
+          inputRows={tool.inputRows}
+          presets={presets}
+        />
+      )}
 
       <section
         aria-labelledby="about-heading"

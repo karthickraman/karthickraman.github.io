@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+
+/** Avoid accidental dynamic / RSC edge cases on the tools index. */
+export const dynamic = "force-static";
 import { TOOLS_CONTENT, SITE_URL } from "@/lib/tools-content";
 import { Breadcrumbs } from "@/components/tools/Breadcrumbs";
 import { ToolsIndexJsonLd } from "@/components/tools/JsonLd";
@@ -48,7 +51,7 @@ export default function ToolsIndexPage() {
         <p className="font-mono text-xs uppercase tracking-[0.25em] text-terminal-cyan">
           $ ls /tools
         </p>
-        <h1 className="font-display text-4xl font-normal leading-snug tracking-tight text-terminal-body sm:text-5xl">
+        <h1 className="font-mono text-3xl font-semibold leading-snug tracking-tight text-terminal-body sm:text-4xl">
           Developer Tools
         </h1>
         <p className="max-w-3xl text-base leading-relaxed text-terminal-muted sm:text-lg">
@@ -67,14 +70,16 @@ export default function ToolsIndexPage() {
       </header>
 
       <section
+        id="tool-output"
         aria-label="All tools"
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        tabIndex={-1}
+        className="grid scroll-mt-32 gap-4 outline-none sm:grid-cols-2 sm:scroll-mt-28 lg:grid-cols-3"
       >
         {TOOLS_CONTENT.map((tool) => (
           <Link
             key={tool.slug}
             href={`/tools/${tool.slug}/`}
-            className="terminal-card group flex h-full flex-col gap-3 rounded-xl border border-terminal-border bg-terminal-surface/70 p-5 transition hover:border-terminal-accent/40"
+            className="terminal-card group flex h-full flex-col gap-3 rounded-xl border border-terminal-border bg-terminal-surface/70 p-5 transition hover:border-terminal-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent"
           >
             <div className="flex items-start justify-between gap-2">
               <span className="font-mono text-base font-semibold text-terminal-accent text-glow">
@@ -95,16 +100,6 @@ export default function ToolsIndexPage() {
             </span>
           </Link>
         ))}
-      </section>
-
-      <section className="rounded-lg border border-terminal-border bg-terminal-surface/40 p-5 text-sm text-terminal-muted">
-        <p>
-          <span className="text-terminal-accent">$ </span>
-          Why a separate page per tool? Because Google can&apos;t see what&apos;s
-          locked inside a JavaScript-only modal. Each utility deserves a
-          crawlable home so anyone searching for &quot;jwt decoder&quot; or
-          &quot;what does HTTP 504 mean&quot; can find it.
-        </p>
       </section>
     </article>
   );

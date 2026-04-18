@@ -22,7 +22,7 @@ export function RelatedTools({ slugs }: { slugs: string[] }) {
           <Link
             key={tool.slug}
             href={`/tools/${tool.slug}/`}
-            className="terminal-card group flex flex-col gap-2 rounded-lg border border-terminal-border bg-terminal-surface/70 p-4 transition hover:border-terminal-accent/40"
+            className="terminal-card group flex flex-col gap-2 rounded-lg border border-terminal-border bg-terminal-surface/70 p-4 transition hover:border-terminal-accent/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent"
           >
             <span className="text-sm font-semibold text-terminal-accent group-hover:text-glow">
               {tool.h1}

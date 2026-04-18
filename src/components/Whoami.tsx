@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { personal } from "@/data/resume";
+import { openDevTools } from "@/lib/open-devtools";
 
 function TypingLine({
   text,
@@ -168,7 +169,7 @@ export function Whoami() {
             </div>
           </motion.div>
 
-          {/* Terminal output */}
+          {/* Terminal output — clear bottom row so it never wraps beside the floated photo */}
           <div className="min-w-0 space-y-4 text-sm leading-relaxed md:text-base">
             <p className="text-terminal-muted">
               <span className="text-terminal-accent text-glow">➜</span>{" "}
@@ -211,18 +212,31 @@ export function Whoami() {
               />
             </p>
 
-            {/* Blinking prompt */}
-            <motion.p
+            {/* Blinking prompt + devtools — full-width below float; single flex row for alignment */}
+            <motion.div
               initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: reduceMotion ? 0 : dEnd }}
-              className="pt-3 text-terminal-muted"
-              aria-hidden="true"
+              className="clear-both flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-4 text-terminal-muted"
             >
-              <span className="text-terminal-accent text-glow">➜</span>{" "}
-              <span className="text-terminal-cyan">~</span>{" "}
-              <span className="cursor-blink" />
-            </motion.p>
+              <span className="text-terminal-accent text-glow">➜</span>
+              <span className="text-terminal-cyan">~</span>
+              <span className="cursor-blink" aria-hidden />
+              <button
+                type="button"
+                onClick={openDevTools}
+                className="group inline-flex items-center gap-1.5 rounded border border-transparent px-1 py-0.5 font-mono text-xs text-terminal-muted transition hover:border-terminal-accent/35 hover:bg-terminal-accent/5 hover:text-terminal-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent"
+              >
+                <span className="text-terminal-accent/90 text-glow group-hover:text-terminal-accent" aria-hidden>
+                  $_
+                </span>
+                <span>devtools</span>
+                <kbd className="hidden rounded border border-terminal-border bg-terminal-bg/60 px-1 font-mono text-[10px] text-terminal-muted sm:inline">
+                  ⌘K
+                </kbd>
+                <span className="sr-only">Open developer tools terminal</span>
+              </button>
+            </motion.div>
           </div>
         </div>
       </motion.div>

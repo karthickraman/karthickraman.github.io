@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "a11y:tools": "npx -y @axe-core/cli http://localhost:3000/tools/cron-expression --exit --timeout 120"
   },
   "dependencies": {
     "cron-parser": "^5.5.0",

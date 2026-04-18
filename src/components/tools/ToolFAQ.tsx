@@ -19,7 +19,7 @@ export function ToolFAQ({ items }: { items: FAQEntry[] }) {
             key={i}
             className="group rounded-lg border border-terminal-border bg-terminal-surface/70 p-4 open:border-terminal-accent/30 open:shadow-[0_0_24px_rgba(0,255,65,0.04)]"
           >
-            <summary className="flex cursor-pointer list-none items-start justify-between gap-3 text-sm font-medium text-terminal-body">
+            <summary className="flex cursor-pointer list-none items-start justify-between gap-3 rounded-sm text-sm font-medium text-terminal-body focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent">
               <span className="flex-1">
                 <span className="mr-2 text-terminal-cyan">Q.</span>
                 {item.q}

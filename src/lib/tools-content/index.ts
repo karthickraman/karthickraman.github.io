@@ -191,17 +191,17 @@ export const TOOLS_CONTENT: ToolContent[] = [
     pageDescription:
       "Pretty-print, minify, sort, and validate JSON in your browser. Pinpoints parse errors with the exact line and column. Handles deeply nested objects and large payloads.",
     h1: "JSON Formatter",
-    tagline: "Pretty-print, minify, sort keys, and pinpoint parse errors with line + column.",
+    tagline: "Pretty-print, minify, sort keys, diff two documents, and pinpoint parse errors.",
     inputLabel: "Paste JSON",
     inputPlaceholder: '{"name": "karthick", "skills": ["java", "go"]}',
     inputRows: 8,
     defaultInput:
       '{"name":"karthick","role":"backend engineer","skills":["java","go","kafka"],"active":true,"projects":42}',
     hero:
-      "Paste any JSON to pretty-print it, minify it, or sort the keys alphabetically. If the JSON is invalid, you get the exact line and column of the parse error.",
+      "Use the format tab to pretty-print, minify, or sort JSON — or the compare tab (or “second JSON” on the format tab) to diff two documents side by side. Invalid JSON still reports exact line and column.",
     about: [
       "JSON (JavaScript Object Notation) is the ubiquitous data format for REST APIs, configuration files, log records, and inter-service messaging. Despite its simplicity, it’s common to receive JSON that is one giant minified line, has inconsistent key ordering, or contains a sneaky trailing comma that breaks strict parsers. This formatter handles all three cases without requiring you to leave the browser.",
-      "The widget runs three operations: pretty-print (default 2-space indentation), minify (collapses to a single line — useful for embedding in code), and sort (alphabetises object keys recursively, which makes diffing two API responses trivial). Validation uses the browser’s built-in JSON.parse, so the parsing rules match what your application will see at runtime. When parsing fails, the tool extracts the byte position from the error message and shows the offending line with a caret pointing at the column.",
+      "The widget runs four operations: pretty-print (default 2-space indentation), minify (collapses to a single line — useful for embedding in code), sort (alphabetises object keys recursively, which makes diffing two API responses trivial), and diff (structural comparison — paste two JSON documents separated by a line containing only ---). Validation uses the browser’s built-in JSON.parse, so the parsing rules match what your application will see at runtime. When parsing fails, the tool extracts the byte position from the error message and shows the offending line with a caret pointing at the column.",
       "Because the work happens in your browser, there is no upload limit beyond what your tab can hold in memory — comfortably tens of megabytes on a desktop. The tool also reports the byte size of the formatted output and the type of the root value (object, array, string, number, boolean, null), which is handy when you’re inspecting an API response and want a quick sanity check.",
     ],
     examples: [
@@ -225,6 +225,11 @@ export const TOOLS_CONTENT: ToolContent[] = [
         input: '{"name": "karthick",}',
         description: "Reports the trailing-comma error with line and column.",
       },
+      {
+        title: "Structural diff",
+        input: 'diff {"user":"a","count":1}\n---\n{"user":"a","count":2,"ok":true}',
+        description: "Shows added keys, removed keys, and value changes between two JSON documents.",
+      },
     ],
     faq: [
       {
@@ -246,6 +251,10 @@ export const TOOLS_CONTENT: ToolContent[] = [
       {
         q: "How does it report errors?",
         a: "When JSON.parse throws, the tool extracts the byte position from the error message, converts it to a line and column, and renders the offending source line with a caret marker.",
+      },
+      {
+        q: "How do I compare two JSON blobs?",
+        a: "On this page, open the compare tab for two editors, or stay on format and turn on “second JSON (diff)”. In the ⌘K devtools panel you can still use json diff with a --- separator between two documents. Added fields are +, removed -, changed ~.",
       },
     ],
     related: ["jwt-decoder", "base64", "http-status-codes"],
@@ -402,7 +411,7 @@ export const TOOLS_CONTENT: ToolContent[] = [
     inputRows: 2,
     defaultInput: "9am PST in IST, Stockholm, UTC, Tokyo",
     hero:
-      "Type a time and the zones you care about — “9am PST in IST, Stockholm, UTC” — and see them all side by side. Supports IANA names, common abbreviations, and Nordic shortcuts.",
+      "Use the synced world clock to scrub one moment across Pacific, UTC, India, and US Central — or type a phrase like “9am PST in IST, Stockholm, UTC” in the terminal below for natural-language conversions, aliases, and Nordic shortcuts.",
     about: [
       "Coordinating across timezones is a common annoyance for distributed teams. A meeting at 9am Pacific is also 9:30pm in Bengaluru, 6pm in Stockholm during summer (CEST) but 5pm in winter (CET). Daylight Saving Time, half-hour offsets (India, Newfoundland), and quarter-hour offsets (Nepal, Chatham Islands) all conspire to make mental arithmetic unreliable.",
       "This converter accepts natural-language phrases like “9am PST in IST, Stockholm, UTC” and returns each zone with its current UTC offset and DST status. It understands IANA timezone names (America/Los_Angeles, Europe/Stockholm), common abbreviations (PST, EST, CET, IST, JST), and city aliases (Stockholm, London, Tokyo, Sydney, Bengaluru). It also has explicit support for Sweden and the Nordic countries, which are easy to confuse because they share the same UTC offset but observe DST on different rules.",

@@ -11,24 +11,14 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { execute, TOOLS } from "@/lib/devtools/registry";
+import { OPEN_DEVTOOLS_EVENT } from "@/lib/open-devtools";
+import { DevtoolsOutputLines } from "@/lib/devtools-output";
 import type { OutputLine, Tool } from "@/lib/devtools/types";
 
 type Block =
   | { id: string; kind: "input"; command: string }
   | { id: string; kind: "output"; lines: OutputLine[]; status: "ok" | "error" | "info" }
   | { id: string; kind: "palette" };
-
-const KIND_CLASS: Record<NonNullable<OutputLine["kind"]>, string> = {
-  default: "text-terminal-body",
-  muted: "text-terminal-muted",
-  success: "text-terminal-accent text-glow",
-  error: "text-terminal-red",
-  warn: "text-terminal-yellow",
-  info: "text-terminal-cyan text-glow-cyan",
-  label: "text-terminal-cyan font-semibold",
-  code: "text-terminal-body bg-terminal-bg/60 rounded-md border border-terminal-border px-3 py-2 whitespace-pre-wrap break-words font-mono",
-  prompt: "text-terminal-accent",
-};
 
 const WELCOME: OutputLine[] = [
   { text: "devtools v1.0  ·  type `help` to begin or `tools` to browse.", kind: "info" },
@@ -37,57 +27,6 @@ const WELCOME: OutputLine[] = [
 
 let __id = 0;
 const nextId = () => `b${++__id}`;
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  const onCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
-    } catch {
-      /* noop */
-    }
-  }, [text]);
-  return (
-    <button
-      type="button"
-      onClick={onCopy}
-      className="ml-2 shrink-0 self-start rounded-md border border-terminal-border bg-terminal-surface px-2 py-1 text-[10px] uppercase tracking-wider text-terminal-muted transition hover:border-terminal-accent/50 hover:text-terminal-accent"
-      aria-label="Copy to clipboard"
-    >
-      {copied ? "copied" : "copy"}
-    </button>
-  );
-}
-
-function OutputBlock({ lines }: { lines: OutputLine[] }) {
-  return (
-    <div className="space-y-1.5 pl-4">
-      {lines.map((line, i) => {
-        const cls = KIND_CLASS[line.kind ?? "default"];
-        if (line.kind === "code") {
-          return (
-            <div key={i} className="flex min-w-0 items-start">
-              <pre
-                className={`min-w-0 flex-1 overflow-x-auto text-left text-xs sm:text-[13px] ${cls}`}
-              >
-                {line.text}
-              </pre>
-              {line.copyable ? <CopyButton text={line.text} /> : null}
-            </div>
-          );
-        }
-        return (
-          <div key={i} className={`text-sm ${cls}`}>
-            {line.prefix ? <span className="text-terminal-muted">{line.prefix} </span> : null}
-            {line.text || "\u00a0"}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 function ToolCard({ tool, onPick }: { tool: Tool; onPick: (cmd: string) => void }) {
   return (
@@ -138,6 +77,7 @@ export function DevTools() {
   const reduceMotion = useReducedMotion() ?? false;
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const close = useCallback(() => setOpen(false), []);
   const openPanel = useCallback(() => setOpen(true), []);
@@ -160,6 +100,12 @@ export function DevTools() {
   }, [open, close]);
 
   useEffect(() => {
+    const onProgrammaticOpen = () => setOpen(true);
+    window.addEventListener(OPEN_DEVTOOLS_EVENT, onProgrammaticOpen);
+    return () => window.removeEventListener(OPEN_DEVTOOLS_EVENT, onProgrammaticOpen);
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
     const t = setTimeout(() => inputRef.current?.focus(), 50);
     return () => clearTimeout(t);
@@ -173,6 +119,58 @@ export function DevTools() {
       el.scrollTop = el.scrollHeight;
     });
   }, [blocks, open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const { style } = document.body;
+    const prevOverflow = style.overflow;
+    style.overflow = "hidden";
+    return () => {
+      style.overflow = prevOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const selector =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+    const focusableInPanel = () =>
+      Array.from(panel.querySelectorAll<HTMLElement>(selector)).filter(
+        (el) =>
+          !el.closest("[hidden]") &&
+          !el.hasAttribute("disabled") &&
+          el.tabIndex !== -1,
+      );
+
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const list = focusableInPanel();
+      if (list.length === 0) return;
+      const first = list[0];
+      const last = list[list.length - 1];
+      const active = document.activeElement;
+      const inPanel = active instanceof Node && panel.contains(active);
+      if (!inPanel) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [open, blocks]);
 
   const runCommand = useCallback(async (raw: string) => {
     const command = raw.trim();
@@ -270,7 +268,14 @@ export function DevTools() {
       if (block.kind === "palette") {
         return <PaletteBlock key={block.id} onPick={pickFromPalette} />;
       }
-      return <OutputBlock key={block.id} lines={block.lines} />;
+      return (
+        <DevtoolsOutputLines
+          key={block.id}
+          lines={block.lines}
+          listClassName="pl-4"
+          copyCodeAriaLabel="Copy to clipboard"
+        />
+      );
     }),
     [blocks, pickFromPalette],
   );
@@ -303,12 +308,13 @@ export function DevTools() {
             transition={{ duration: 0.18 }}
             className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 px-3 pb-3 pt-[max(1rem,env(safe-area-inset-top,0px))] backdrop-blur-sm sm:items-center sm:p-6"
             onClick={close}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Developer tools terminal"
           >
             <motion.div
+              ref={panelRef}
               key="devtools-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Developer tools terminal"
               initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -321,9 +327,14 @@ export function DevTools() {
                   <button
                     type="button"
                     onClick={close}
-                    className="window-dot bg-[#ff5f56] cursor-pointer"
                     aria-label="Close devtools"
-                  />
+                    className="-ml-1 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full text-terminal-muted transition hover:bg-terminal-border/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent"
+                  >
+                    <span
+                      className="window-dot bg-[#ff5f56] pointer-events-none"
+                      aria-hidden
+                    />
+                  </button>
                   <span className="window-dot bg-[#ffbd2e]" aria-hidden />
                   <span className="window-dot bg-[#27c93f]" aria-hidden />
                 </span>
