@@ -16,6 +16,8 @@ export function Navbar() {
   const [active, setActive] = useState("whoami");
   const headerRef = useRef<HTMLElement | null>(null);
   const scrollSpyOffsetRef = useRef(128);
+  const lockedRef = useRef(false);
+  const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const el = headerRef.current;
@@ -41,6 +43,7 @@ export function Navbar() {
     const ids = links.map((l) => l.id);
 
     const handleScroll = () => {
+      if (lockedRef.current) return;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const y = scrollSpyOffsetRef.current;
@@ -66,6 +69,11 @@ export function Navbar() {
 
   const scrollTo = useCallback((id: string) => {
     setActive(id);
+    lockedRef.current = true;
+    if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
+    lockTimerRef.current = setTimeout(() => {
+      lockedRef.current = false;
+    }, 1000);
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
