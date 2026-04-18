@@ -3,28 +3,7 @@
 import { motion } from "framer-motion";
 import { skills } from "@/data/resume";
 
-function buildTreeLines(): { text: string; isCategory: boolean }[] {
-  const lines: { text: string; isCategory: boolean }[] = [{ text: ".", isCategory: false }];
-  skills.forEach((cat, ci) => {
-    const catLast = ci === skills.length - 1;
-    lines.push({
-      text: `${catLast ? "└── " : "├── "}${cat.category}`,
-      isCategory: true,
-    });
-    const indent = catLast ? "    " : "│   ";
-    cat.skills.forEach((skill, si) => {
-      const skLast = si === cat.skills.length - 1;
-      lines.push({
-        text: `${indent}${skLast ? "└── " : "├── "}${skill}`,
-        isCategory: false,
-      });
-    });
-  });
-  return lines;
-}
-
 export function Skills() {
-  const treeLines = buildTreeLines();
   const totalSkills = skills.reduce((n, c) => n + c.skills.length, 0);
 
   return (
@@ -36,61 +15,75 @@ export function Skills() {
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.45 }}
-        className="terminal-card rounded-lg border border-terminal-border bg-terminal-surface"
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="terminal-card gradient-border rounded-xl border border-terminal-border bg-terminal-surface"
       >
-        <div className="flex items-center gap-2 border-b border-terminal-border bg-terminal-bg px-3 py-2">
-          <span className="size-3 rounded-full bg-[#ff5f56]" aria-hidden />
-          <span className="size-3 rounded-full bg-[#ffbd2e]" aria-hidden />
-          <span className="size-3 rounded-full bg-[#27c93f]" aria-hidden />
-          <span className="ml-3 text-[11px] text-terminal-muted">
+        <div className="window-chrome">
+          <span className="window-dot bg-[#ff5f56]" aria-hidden />
+          <span className="window-dot bg-[#ffbd2e]" aria-hidden />
+          <span className="window-dot bg-[#27c93f]" aria-hidden />
+          <span className="ml-4 text-[11px] text-terminal-muted">
             tree ~/stack
           </span>
         </div>
-        <div className="p-6">
-          <p className="mb-4 text-xs text-terminal-muted">
-            <span className="text-terminal-accent text-glow">$</span> tree ~/stack
+
+        <div className="p-6 md:p-8">
+          <p className="mb-6 text-xs text-terminal-muted">
+            <span className="text-terminal-accent text-glow">$</span> tree
+            ~/stack --group-directories-first
           </p>
-          <div className="overflow-x-auto text-xs leading-relaxed md:text-sm">
-            {treeLines.map((line, i) => (
+
+          {/* Skill category grid */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            {skills.map((cat, ci) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -8 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                key={cat.category}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.15, delay: i * 0.02 }}
-                className={
-                  line.isCategory
-                    ? "text-terminal-yellow font-semibold"
-                    : "text-terminal-accent-soft"
-                }
+                transition={{ duration: 0.4, delay: ci * 0.05 }}
+                className="group rounded-lg border border-terminal-border/60 bg-terminal-bg/50 p-4 transition-all duration-300 hover:border-terminal-accent/20 hover:bg-terminal-bg/80"
               >
-                <pre className="whitespace-pre">{line.text}</pre>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-terminal-yellow font-semibold text-sm">
+                    📂
+                  </span>
+                  <span className="text-terminal-yellow font-semibold text-sm">
+                    {cat.category}/
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {cat.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="skill-tag rounded-md border border-terminal-border/50 bg-terminal-surface/60 px-2 py-1 text-[11px] text-terminal-accent-soft"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </motion.div>
             ))}
           </div>
 
-          <div className="mt-6 border-t border-dashed border-terminal-border pt-4 text-xs text-terminal-muted">
-            <p>
-              <span className="text-terminal-accent-soft">
-                {skills.length} directories
-              </span>
-              , {totalSkills} files
-            </p>
-          </div>
-
-          <div className="mt-4 text-xs text-terminal-muted">
-            <p>
-              <span className="text-terminal-accent text-glow">$</span>{" "}
-              npm install --save-dev expertise
-            </p>
-            <p className="mt-1">
-              <span className="text-terminal-accent-soft">added</span>{" "}
-              {totalSkills} packages in 0.009s
-            </p>
-            <p className="text-terminal-muted">
-              found <span className="text-terminal-accent">0</span> vulnerabilities
-            </p>
+          {/* Summary stats */}
+          <div className="mt-6 border-t border-terminal-border pt-4 text-xs text-terminal-muted">
+            <div className="flex items-center justify-between">
+              <p>
+                <span className="text-terminal-accent-soft">
+                  {skills.length} directories
+                </span>
+                , {totalSkills} files
+              </p>
+              <p>
+                <span className="text-terminal-accent text-glow">$</span>{" "}
+                <span className="text-terminal-muted">
+                  found{" "}
+                  <span className="text-terminal-accent">{totalSkills}</span>{" "}
+                  capabilities
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>

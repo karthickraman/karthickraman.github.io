@@ -12,10 +12,25 @@ export default function Home() {
     <main className="min-h-screen bg-terminal-bg pb-16 font-mono text-terminal-body">
       <Navbar />
       <Hero />
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="section-divider" />
+      </div>
       <About />
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="section-divider" />
+      </div>
       <Skills />
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="section-divider" />
+      </div>
       <Experience />
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="section-divider" />
+      </div>
       <Projects />
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="section-divider" />
+      </div>
       <Contact />
       <Footer />
     </main>

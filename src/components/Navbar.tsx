@@ -33,41 +33,51 @@ export function Navbar() {
   }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -12 }}
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
-      className="sticky top-0 z-50 border-b border-terminal-border bg-terminal-bg/95 backdrop-blur-sm"
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="glass sticky top-0 z-50 border-b border-terminal-border/60"
     >
       <div className="mx-auto max-w-5xl px-4 py-3">
-        <div className="mb-2 flex items-center gap-2 text-xs text-terminal-muted">
+        <div className="mb-2.5 flex items-center gap-2 text-xs text-terminal-muted">
           <span className="text-terminal-accent text-glow">$</span>
-          <span className="truncate text-terminal-body">
-            exec portfolio-nav — session active
+          <span className="truncate text-terminal-body/80">
+            exec portfolio-nav
           </span>
-          <span className="ml-auto text-terminal-accent text-glow cursor-blink" />
+          <span className="ml-auto flex items-center gap-1.5">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-terminal-accent animate-pulse" />
+            <span className="text-terminal-accent/60 text-[10px]">
+              session active
+            </span>
+          </span>
         </div>
         <nav
-          className="cmd-scroll flex gap-1 overflow-x-auto pb-1"
+          className="cmd-scroll flex gap-1.5 overflow-x-auto pb-1"
           aria-label="Primary"
         >
-          {links.map((link) => (
-            <button
+          {links.map((link, i) => (
+            <motion.button
               key={link.id}
               type="button"
               onClick={() => scrollTo(link.id)}
-              className={`shrink-0 rounded border bg-terminal-surface px-3 py-1.5 text-left text-xs transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.04, duration: 0.3 }}
+              className={`shrink-0 rounded-md border px-3 py-1.5 text-left text-xs transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terminal-accent ${
                 active === link.id
                   ? "nav-active"
-                  : "border-terminal-border text-terminal-accent-soft hover:border-terminal-accent hover:text-terminal-accent"
+                  : "border-terminal-border bg-terminal-surface/60 text-terminal-muted hover:border-terminal-accent/40 hover:text-terminal-accent-soft hover:bg-terminal-surface"
               }`}
             >
-              <span className="text-terminal-muted">$</span> {link.label}
-            </button>
+              <span className="text-terminal-muted/50">$</span> {link.label}
+            </motion.button>
           ))}
         </nav>
       </div>
